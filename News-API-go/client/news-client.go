@@ -1,20 +1,10 @@
 package client
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/url"
-	"time"
-)
-
-type Category int
-
-const (
-	Business Category = iota
-	Entertainment
-	Health
-	Science
-	Sports
-	Technology
+	"strings"
 )
 
 type Client struct {
@@ -24,34 +14,36 @@ type Client struct {
 	httpClient *http.Client
 }
 
-type Source struct {
-	Id   string
-	Name string
+func (c *Client) GetTopHeadlines(req TopHeadlinesRequest) (ArticlesResult, error) {
+
+	rel := &url.URL{Path: "/topheadlines"}
+
+	queryParams := []string{}
+
+	if req.KeyWord != "" {
+		append(queryParams, "q="+req.KeyWord)
+	}
+
+	if len(req.Sources) > 0 {
+		append(queryParams, "sources="+strings.Join(req.Sources[:], ","))
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+
+	customReq, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	customReq.Header.Set("Accept", "application/json")
+	customReq.Header.Set("User-Agent", c.UserAgent)
+
+	resp, err := c.httpClient.Do(customReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var users []User
+	err = json.NewDecoder(resp.Body).Decode(&users)
+	return users, err
+
 }
-
-type Article struct {
-	SourceName  Source
-	Author      string
-	Title       string
-	Description string
-	Url         string
-	UrlToImage  string
-	PublishedAt time.Time
-}
-
-type ArticlesResult struct {
-
-	// buch os status
-	// bunch of error
-	TotalResults int
-	Articles     []Article
-}
-
-type TopHeadlinesRequest struct {
-	Keyword string
-	Sources []string
-}
-
-// func (c *Client) GetTopHeadlines() (*ArticlesResult, error) {
-
-// }
