@@ -8,8 +8,8 @@ import (
 
 type Category int
 
-const Categories (
-	Business Category iota
+const (
+	Business Category = iota
 	Entertainment
 	Health
 	Science
@@ -36,7 +36,7 @@ type Article struct {
 	Description string
 	Url         string
 	UrlToImage  string
-	PublishedAt Time
+	PublishedAt time.Time
 }
 
 type ArticlesResult struct {
@@ -47,12 +47,11 @@ type ArticlesResult struct {
 	Articles     []Article
 }
 
-type TopHeadlinesRequest struct{
+type TopHeadlinesRequest struct {
 	Keyword string
 	Sources []string
-
 }
 
-func (c *Client) GetTopHeadlines() (*ArticlesResult, error) {
+// func (c *Client) GetTopHeadlines() (*ArticlesResult, error) {
 
-}
+// }
