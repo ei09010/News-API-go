@@ -1,8 +1,10 @@
 package client
 
 import (
+	"News-API-go/constants"
 	"News-API-go/models"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -18,7 +20,7 @@ type Client struct {
 // GetTopHeadlines to request top headlines
 func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.ArticlesResult, error) {
 
-	rel := &url.URL{Path: "/topheadlines"}
+	relativePath := &url.URL{Path: "/topheadlines"}
 
 	queryParams := []string{}
 
@@ -44,33 +46,62 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 
 	//page
 
-	// to add further query parameters
+	if req.Page > 0 {
+		queryParams = append(queryParams, "page="+strings.ToLower(string(req.Page)))
+	}
+
+	if req.PageSize > 0 {
+		queryParams = append(queryParams, "pageSize="+strings.ToLower(string(req.PageSize)))
+	}
 
 	queryString := strings.Join(queryParams[:], "&")
 
-	rel.Path += queryString
+	relativePath.Path += queryString
 
-	u := c.BaseURL.ResolveReference(rel)
+	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
 
-	customReq, err := http.NewRequest("GET", u.String(), nil)
+	return c.makeRequest(urlAbsoluteReference, queryString)
+
+}
+
+func (c *Client) makeRequest(url *url.URL, queryString string) (*models.ArticlesResult, error) {
+
+	customReq, err := http.NewRequest("GET", url.String(), nil)
 
 	if err != nil {
 		return nil, err
 	}
+
 	customReq.Header.Set("Accept", "application/json")
 	customReq.Header.Set("User-Agent", c.UserAgent)
 
-	resp, err := c.httpClient.Do(customReq)
+	httpResponse, err := c.httpClient.Do(customReq)
 
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer httpResponse.Body.Close()
 
 	var articleResults models.ArticlesResult
 
-	err = json.NewDecoder(resp.Body).Decode(&articleResults)
+	if httpResponse != nil {
+		err = json.NewDecoder(httpResponse.Body).Decode(&articleResults)
+
+		if articleResults.Status != http.StatusOK {
+			err = errors.New("The API returned an error code that wasn't expected: " + string(articleResults.Status))
+
+			articleResults.Error = models.Error{
+				Error:   constants.UnexpectedError,
+				Message: "The API returned an error code that wasn't expected: " + string(articleResults.Status)}
+		}
+
+	} else {
+		articleResults.Status = http.StatusInternalServerError
+
+		articleResults.Error = models.Error{
+			Error:   constants.UnexpectedError,
+			Message: "The API returned an empty response. Are you connected to the internet?"}
+	}
 
 	return &articleResults, err
-
 }

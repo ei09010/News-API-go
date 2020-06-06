@@ -145,10 +145,10 @@ const (
 	ZA
 )
 
-type ErrorCode int
+type ErrorCode string
 
 const (
-	ApiKeyExhausted ErrorCode = iota
+	ApiKeyExhausted ErrorCode = "ApiKeyExhausted"
 	ApiKeyMissing
 	ApiKeyInvalid
 	ApiKeyDisabled
@@ -282,17 +282,4 @@ const (
 	/// Sort by relevancy to the Q param
 	/// </summary>
 	Relevancy
-)
-
-type Status int
-
-const (
-	/// <summary>
-	/// Request was successful
-	/// </summary>
-	Ok Status = iota
-	/// <summary>
-	/// Request failed
-	/// </summary>
-	Error
 )

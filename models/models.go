@@ -21,9 +21,8 @@ type Article struct {
 }
 
 type ArticlesResult struct {
-
-	// buch os status
-	// bunch of error
+	Status       int
+	Error        Error
 	TotalResults int
 	Articles     []Article
 }
@@ -36,4 +35,9 @@ type TopHeadlinesRequest struct {
 	Country  constants.Country
 	Page     int
 	PageSize int
+}
+
+type Error struct {
+	Error   constants.ErrorCode
+	Message string
 }
