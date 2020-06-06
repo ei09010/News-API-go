@@ -6,51 +6,15 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
 )
-
-
-// type Source struct {
-// 	Id   string
-// 	Name string
-// }
-
-// type Article struct {
-// 	SourceName  Source
-// 	Author      string
-// 	Title       string
-// 	Description string
-// 	Url         string
-// 	UrlToImage  string
-// 	PublishedAt time.Time
-// }
-
-// type ArticlesResult struct {
-
-// 	// buch os status
-// 	// bunch of error
-// 	TotalResults int
-// 	Articles     []Article
-// }
-
-type TopHeadlinesRequest struct {
-	Keyword  string
-	Sources  []string
-	Category Category
-	Language Language
-	Country  Country
-	Page     int
-	PageSize int
-}
 
 type Client struct {
 	BaseURL   *url.URL
 	UserAgent string
-
 	httpClient *http.Client
 }
 
-func (c *Client) GetTopHeadlines(req TopHeadlinesRequest) (*ArticlesResult, error) {
+func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*ArticlesResult, error) {
 
 	rel := &url.URL{Path: "/topheadlines"}
 
@@ -87,7 +51,7 @@ func (c *Client) GetTopHeadlines(req TopHeadlinesRequest) (*ArticlesResult, erro
 	}
 	defer resp.Body.Close()
 
-	var articleResults ArticlesResult
+	var articleResults models.ArticlesResult
 
 	err = json.NewDecoder(resp.Body).Decode(&articleResults)
 
