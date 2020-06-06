@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
 	"News-API-go/constants"
+	"time"
 )
 
 type Source struct {

@@ -1,14 +1,14 @@
 package constants
 
-type Category int
+type Category string
 
 const (
-	Business Category = iota
-	Entertainment
-	Health
-	Science
-	Sports
-	Technology
+	Business      Category = "Business"
+	Entertainment          = "Entertainment"
+	Health                 = "Health"
+	Science                = "Science"
+	Sports                 = "Sports"
+	Technology             = "Technology"
 )
 
 type Country int
@@ -165,13 +165,13 @@ const (
 	UnknownError
 )
 
-type Language int
+type Language string
 
 const (
 	/// <summary>
 	/// Afrikaans (South Africa)
 	/// </summary>
-	AF Language = iota
+	AF Language = "AF"
 	AN
 	AR_lang
 	AZ
