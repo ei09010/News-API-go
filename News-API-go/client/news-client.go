@@ -6,30 +6,32 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
 )
 
-type Source struct {
-	Id   string
-	Name string
-}
 
-type Article struct {
-	SourceName  Source
-	Author      string
-	Title       string
-	Description string
-	Url         string
-	UrlToImage  string
-	PublishedAt time.Time
-}
+// type Source struct {
+// 	Id   string
+// 	Name string
+// }
 
-type ArticlesResult struct {
+// type Article struct {
+// 	SourceName  Source
+// 	Author      string
+// 	Title       string
+// 	Description string
+// 	Url         string
+// 	UrlToImage  string
+// 	PublishedAt time.Time
+// }
 
-	// buch os status
-	// bunch of error
-	TotalResults int
-	Articles     []Article
-}
+// type ArticlesResult struct {
+
+// 	// buch os status
+// 	// bunch of error
+// 	TotalResults int
+// 	Articles     []Article
+// }
 
 type TopHeadlinesRequest struct {
 	Keyword  string
