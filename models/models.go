@@ -2,7 +2,7 @@ package models
 
 import (
 	"time"
-	"News-API-go/News-API-go/constants"
+	"News-API-go/constants"
 )
 
 type Source struct {
@@ -31,9 +31,9 @@ type ArticlesResult struct {
 type TopHeadlinesRequest struct {
 	Keyword  string
 	Sources  []string
-	Category Category
-	Language Language
-	Country  Country
+	Category constants.Category
+	Language constants.Language
+	Country  constants.Country
 	Page     int
 	PageSize int
 }

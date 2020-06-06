@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
+	"News-API-go/models"
 )
 
 type Client struct {
@@ -14,7 +14,7 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*ArticlesResult, error) {
+func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.ArticlesResult, error) {
 
 	rel := &url.URL{Path: "/topheadlines"}
 
