@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -80,17 +81,31 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 	customReq.Header.Set("user-agent", c.UserAgent)
 	customReq.Header.Set("x-api-key", c.ApiKey)
 
+	c.httpClient = &http.Client{}
+
 	httpResponse, err := c.httpClient.Do(customReq)
 
 	if err != nil {
 		return nil, err
 	}
+
 	defer httpResponse.Body.Close()
 
 	var articleResults models.ArticlesResult
 
 	if httpResponse != nil {
-		err = json.NewDecoder(httpResponse.Body).Decode(&articleResults)
+
+		myResponse, err := ioutil.ReadAll(httpResponse.Body)
+
+		if err != nil {
+			return nil, err
+		}
+
+		httpResponse.Body.Close()
+
+		err = json.Unmarshal(myResponse, &articleResults)
+
+		//err = json.NewDecoder(myResponse).Decode(&articleResults)
 
 		if articleResults.Status != http.StatusOK {
 			err = errors.New("The API returned an error code that wasn't expected: " + string(articleResults.Status))

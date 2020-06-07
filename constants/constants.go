@@ -11,10 +11,10 @@ const (
 	Technology             = "Technology"
 )
 
-type Country int
+type Country string
 
 const (
-	AE Country = iota
+	AE Country = "ae"
 	/// <summary>
 	/// Argentina
 	/// </summary>
