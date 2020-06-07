@@ -1,10 +1,11 @@
-package client
+package main
 
 import (
 	"News-API-go/constants"
 	"News-API-go/models"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -14,13 +15,14 @@ import (
 type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string
+	ApiKey     string
 	httpClient *http.Client
 }
 
 // GetTopHeadlines to request top headlines
 func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.ArticlesResult, error) {
 
-	relativePath := &url.URL{Path: "/topheadlines"}
+	relativePath := &url.URL{Path: "/top-headlines?"}
 
 	queryParams := []string{}
 
@@ -47,16 +49,18 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 	//page
 
 	if req.Page > 0 {
-		queryParams = append(queryParams, "page="+strings.ToLower(string(req.Page)))
+		queryParams = append(queryParams, "page="+string(req.Page))
 	}
 
 	if req.PageSize > 0 {
-		queryParams = append(queryParams, "pageSize="+strings.ToLower(string(req.PageSize)))
+		queryParams = append(queryParams, "pageSize="+string(req.PageSize))
 	}
 
 	queryString := strings.Join(queryParams[:], "&")
 
 	relativePath.Path += queryString
+
+	fmt.Println("relative path: ", relativePath.Path)
 
 	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
 
@@ -72,8 +76,9 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 		return nil, err
 	}
 
-	customReq.Header.Set("Accept", "application/json")
-	customReq.Header.Set("User-Agent", c.UserAgent)
+	customReq.Header.Set("accept", "application/json")
+	customReq.Header.Set("user-agent", c.UserAgent)
+	customReq.Header.Set("x-api-key", c.ApiKey)
 
 	httpResponse, err := c.httpClient.Do(customReq)
 
