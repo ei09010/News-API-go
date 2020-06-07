@@ -1,17 +1,27 @@
 package client
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 
 	//Arrange
 	// check with postman what expected json should be returned
-	// call to endpoint has to be mocked, check which options are available in Golang
+
+	// topHeadlinesReq := models.TopHeadlinesRequest{
+	// 	Category: constants.Business,
+	// 	Country:  constants.AE,
+	// 	Language: "EN",
+	// 	Page:     1,
+	// 	PageSize: 1,
+	// 	Sources:  []string{"bla", "blo"},
+	// }
 
 	// Act
-	// build object with the request for execution
+	// execute client method and save result
 
 	// Assert
-	// Assert result
+	// Assert result against expected url output
 
 }
