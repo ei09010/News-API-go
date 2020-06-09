@@ -42,7 +42,7 @@ type Article struct {
 
 type ArticlesResult struct {
 	Status       string `json:"status"`
-	//Error        Error
+	Error        Error
 	TotalResults int  `json:"totalResults"`
 	Articles     []Article `json:"articles"`
 }
