@@ -53,9 +53,6 @@ func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 		Category: constants.Business,
 		Country:  constants.US,
 		Language: "EN",
-		//Page:     1,
-		//PageSize: 1,
-		// Sources:  []string{"bla", "blo"},
 	}
 
 	newsClient.BaseURL, _ = url.Parse(ts.URL)
@@ -125,6 +122,10 @@ func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 		t.Errorf("handler returned empty content")
 	}
 
+	if response.Error.Status != "ok"{
+		t.Errorf("there is a error status, but it shouldn't be there")
+	}
+
 	articleLength := len(response.Articles)
 
 	if response.TotalResults != articleLength {
@@ -169,7 +170,6 @@ func TestGetTopHeadlines_StandardRequestWithPageInfo_ReturnsSuccessResponse(t *t
 		Language: "EN",
 		Page:     1,
 		PageSize: 1,
-		// Sources:  []string{"bla", "blo"},
 	}
 
 	newsClient.BaseURL, _ = url.Parse(ts.URL)

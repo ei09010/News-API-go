@@ -73,6 +73,67 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 
 }
 
+func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesResult, error) {
+
+	relativePath := &url.URL{Path: "/everything"}
+
+	queryParams := []string{}
+
+	if req.Keyword != "" {
+		queryParams = append(queryParams, "q="+req.Keyword)
+	}
+
+	if len(req.Sources) > 0 {
+		queryParams = append(queryParams, "sources="+strings.Join(req.Sources[:], ","))
+	}
+
+	if len(req.Domains) > 0 {
+		queryParams = append(queryParams, "domains="+strings.Join(req.Domains[:], ","))
+	}
+
+	if req.From != time.Time{} {
+		// check this output in test
+		queryParams = append(queryParams, "from="+strings(req.From))
+	}
+
+	if req.To != time.Time{} {
+		// check this output in test
+		queryParams = append(queryParams, "to="+strings(req.To))
+	}
+
+	if string(req.Language) != "" {
+		queryParams = append(queryParams, "language="+strings.ToLower(string(req.Language)))
+	}
+
+	if req.SortBy != 0 {
+		queryParams = append(queryParams, "sortBy="+strconv.Itoa(req.SortBy))
+	}
+
+	//page information
+
+	if req.Page > 0 {
+		queryParams = append(queryParams, "page="+strconv.Itoa(req.Page))
+	}
+
+	if req.PageSize > 0 {
+		queryParams = append(queryParams, "pageSize="+strconv.Itoa(req.PageSize))
+	}
+
+	queryString := strings.Join(queryParams[:], "&")
+
+	if len(queryParams) > 0{
+		relativePath.Path += "?"
+	}
+
+	relativePath.Path += queryString
+
+	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
+
+	return c.makeRequest(urlAbsoluteReference, queryString)
+
+}
+
+
 func (c *Client) makeRequest(url *url.URL, queryString string) (*models.ArticlesResult, error) {
 
 	customReq, err := http.NewRequest("GET", url.String(), nil)

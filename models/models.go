@@ -57,6 +57,19 @@ type TopHeadlinesRequest struct {
 	PageSize int
 }
 
+type EverythingRequest struct {
+	Keyword  string
+	Sources  []string
+	Domains  []string
+	From 	 time.Time
+	To 		 time.Time
+	Language constants.Language
+	SortBy	 constants.SortBy
+	Page     int
+	PageSize int
+}
+
+
 type Error struct {
 	Status  string `json:"status"`
 	Code   string `json:"code"`
