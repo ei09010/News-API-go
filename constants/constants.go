@@ -148,21 +148,21 @@ const (
 type ErrorCode string
 
 const (
-	ApiKeyExhausted ErrorCode = "ApiKeyExhausted"
-	ApiKeyMissing
-	ApiKeyInvalid
-	ApiKeyDisabled
-	ParametersMissing
-	ParametersIncompatible
-	ParameterInvalid
-	RateLimited
-	RequestTimeout
-	SourcesTooMany
-	SourceDoesNotExist
-	SourceUnavailableSortedBy
-	SourceTemporarilyUnavailable
-	UnexpectedError
-	UnknownError
+	ApiKeyExhausted ErrorCode = "apiKeyExhausted"
+	ApiKeyMissing = "apiKeyMissing"
+	ApiKeyInvalid = "apiKeyInvalid"
+	ApiKeyDisabled = "apiKeyDisabled"
+	ParametersMissing = "parametersMissing"
+	ParametersIncompatible = "parametersIncompatible"
+	ParameterInvalid = "parameterInvalid"
+	RateLimited = "rateLimited"
+	RequestTimeout = "requestTimeout"
+	SourcesTooMany = "sourcesTooMany"
+	SourceDoesNotExist = "sourceDoesNotExist"
+	SourceUnavailableSortedBy = "sourceUnavailableSortedBy"
+	SourceTemporarilyUnavailable = "sourceTemporarilyUnavailable"
+	UnexpectedError = "unexpectedError"
+	UnknownError = "unknownError"
 )
 
 type Language string

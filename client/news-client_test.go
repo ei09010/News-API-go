@@ -246,3 +246,126 @@ func TestGetTopHeadlines_StandardRequestWithPageInfo_ReturnsSuccessResponse(t *t
 		response.TotalResults, articleLength)
 	}	
 }
+
+func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsParametersIncompatible(t *testing.T) {
+
+	//Arrange
+	expectedResponse := `{
+		"status": "error",
+		"code": "parametersIncompatible",
+		"message": "You cannot mix the sources parameter with the country or category parameters."
+	}`
+	expectedRequest := `/top-headlines?sources=techcrunch,cnn&language=en&country=ae&page=1&pageSize=1`
+	
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		
+		if req.URL.Path == expectedRequest {
+			io.WriteString(w, expectedResponse)
+		} else {
+			io.WriteString(w, "Bad request")
+		}
+	}))
+
+	defer ts.Close()
+
+	expectedStatus := "error"
+	expectedCode := constants.ParametersIncompatible
+	expectedMessage := "You cannot mix the sources parameter with the country or category parameters."
+	
+	topHeadlinesReq := models.TopHeadlinesRequest{
+		Country:  constants.US,
+		Language: "EN",
+		Page:     1,
+		PageSize: 1,
+		Sources:  []string{"techcrunch", "cnn"},
+	}
+
+	newsClient.BaseURL, _ = url.Parse(ts.URL)
+
+	// Act
+	// execute client method and save result
+	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	// Assert
+	
+	if response.Status != expectedStatus {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Status, expectedStatus)
+	}
+
+	if response.Error.Code != string(expectedCode) {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Code, expectedCode)
+	}
+
+	if response.Error.Message != expectedMessage {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Message, expectedMessage)
+	}
+}
+
+
+func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsApiKeyMissing(t *testing.T) {
+
+	//Arrange
+	expectedResponse := `{
+		"status": "error",
+		"code": "apiKeyMissing",
+		"message": "Your API key is missing. Append this to the URL with the apiKey param, or use the x-api-key HTTP header."
+	}`
+	expectedRequest := `/top-headlines?sources=techcrunch,cnn&language=en&country=ae&page=1&pageSize=1`
+	
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		
+		if req.URL.Path == expectedRequest {
+			io.WriteString(w, expectedResponse)
+		} else {
+			io.WriteString(w, "Bad request")
+		}
+	}))
+
+	defer ts.Close()
+
+	expectedStatus := "error"
+	expectedCode := constants.ApiKeyMissing
+	expectedMessage := "Your API key is missing. Append this to the URL with the apiKey param, or use the x-api-key HTTP header."
+	
+	topHeadlinesReq := models.TopHeadlinesRequest{
+		Country:  constants.US,
+		Language: "EN",
+		Page:     1,
+		PageSize: 1,
+		Sources:  []string{"techcrunch", "cnn"},
+	}
+
+	newsClient.BaseURL, _ = url.Parse(ts.URL)
+
+	// Act
+	// execute client method and save result
+	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	// Assert
+	
+	if response.Status != expectedStatus {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Status, expectedStatus)
+	}
+
+	if response.Error.Code != string(expectedCode) {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Code, expectedCode)
+	}
+
+	if response.Error.Message != expectedMessage {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Error.Message, expectedMessage)
+	}
+}

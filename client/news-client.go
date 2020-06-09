@@ -1,11 +1,8 @@
 package main
 
 import (
-	"News-API-go/constants"
 	"News-API-go/models"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -52,7 +49,7 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 		queryParams = append(queryParams, "country="+strings.ToLower(string(req.Country)))
 	}
 
-	//page
+	//page information
 
 	if req.Page > 0 {
 		queryParams = append(queryParams, "page="+strconv.Itoa(req.Page))
@@ -69,8 +66,6 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 	}
 
 	relativePath.Path += queryString
-
-	fmt.Println("relative path: ", relativePath.Path)
 
 	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
 
@@ -115,19 +110,14 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 		err = json.Unmarshal(myResponse, &articleResults)
 
 		if articleResults.Status != string(http.StatusOK) {
-			err = errors.New("The API returned an error code that wasn't expected: " + string(articleResults.Status))
 
-			articleResults.Error = models.Error{
-				Error:   constants.UnexpectedError,
-				Message: "The API returned an error code that wasn't expected: " + string(articleResults.Status)}
+			err = json.Unmarshal(myResponse, &articleResults.Error)
+
+			return &articleResults, err
 		}
 
 	} else {
-		articleResults.Status = string(http.StatusInternalServerError)
-
-		articleResults.Error = models.Error{
-			Error:   constants.UnexpectedError,
-			Message: "The API returned an empty response. Are you connected to the internet?"}
+			return &articleResults, err
 	}
 
 	return &articleResults, err

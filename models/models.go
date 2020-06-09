@@ -42,7 +42,7 @@ type Article struct {
 
 type ArticlesResult struct {
 	Status       string `json:"status"`
-	Error        Error
+	Error 		Error
 	TotalResults int  `json:"totalResults"`
 	Articles     []Article `json:"articles"`
 }
@@ -58,6 +58,7 @@ type TopHeadlinesRequest struct {
 }
 
 type Error struct {
-	Error   constants.ErrorCode
-	Message string
+	Status  string `json:"status"`
+	Code   string `json:"code"`
+	Message string `json:"message"`
 }
