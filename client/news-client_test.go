@@ -369,3 +369,119 @@ func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsApiKeyMissing(t *t
 		response.Error.Message, expectedMessage)
 	}
 }
+
+// GET EVERYTHING REQUEST TESTS
+
+func TestGetEverything_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
+
+	//Arrange
+	expectedCorrectResponse := `{"status": "ok","totalResults": 7904,"articles": [{"source": {"id": "techcrunch","name": "TechCrunch"},"author": "Jake Bright","title": "アフリカのテックニュースまとめ読み：UAVによる救命医療用品の配送など","description": "2020年5月におきた各種イベントは、アフリカがグローバルに応用できるテクノロジーを育むことができるという主張を支持するものとなった。\r\n\r\nアフリカ大陸でビジネスモデルを開発した2つのスタートアップ、MallforAfricaとZiplineが国際的な注目を浴びている。\r\n\r\nDHLは、ナイジェリアのデジタルリテール・スタートアップ、MallforAfrica.comから成長したターンキーのeコマース企業である<a target=\"_blank\" href=\"https://linkcommerce.com/\"…","url": "https://jp.techcrunch.com/2020/06/10/2020-06-01-africa-roundup-dhl-invests-in-mallforafrica-zipline-launches-in-us-novastar-raises-200m/","urlToImage": "https://techcrunchjp.files.wordpress.com/2020/06/202205hh1017-1.jpg?w=1024","publishedAt": "2020-06-09T23:00:29Z","content": "20205\r\n2MallforAfricaZipline\r\nDHLMallforAfrica.comeLink Commerce\r\nLink Commerce\r\nChris Folayan2011MallforAfrica\r\nMallforAfrica\r\ne25030\r\nLink CommerceMallforAfrica.comDHL\r\nZiplineNovant Health\r\nZiplin… [+551 chars]"}]}`
+	expectedCorrectRequest := `/everything?page=1&sources=techcrunch,cnn&pageSize=1`
+	
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		
+		if req.URL.Path == expectedCorrectRequest {
+			io.WriteString(w, expectedCorrectResponse)
+		} else {
+			io.WriteString(w, "Bad request")
+		}
+	}))
+
+	defer ts.Close()
+
+	expectedStatus := "ok"
+	expectedTotalResults := 7904
+	expectedFirstArticleSourceId := "the-wall-street-journal"
+	expectedFirstArticleSourceName := "The Wall Street Journal"
+	expectedFirstArticleAuthor := "Alison Sider"
+	expectedFirstArticleTitle := "Airlines Got $25 Billion in Stimulus; Industry Still Expected to Shrink - The Wall Street Journal"
+	expectedFirstArticleDescription := "U.S. carriers are planning to operate smaller companies with fewer flights and employees"
+	expectedFirstArticleUrl := "https://www.wsj.com/articles/airlines-got-25-billion-in-stimulus-industry-still-expected-to-shrink-11591527600"
+	expectedFirstArticleUrlToImage := "https://images.wsj.net/im-194495/social"
+	expectedPublishedAt := "2020-06-07 14:11:39 +0000 UTC"
+	
+	
+	topHeadlinesReq := models.TopHeadlinesRequest{
+		Category: constants.Business,
+		Country:  constants.US,
+		Language: "EN",
+	}
+
+	newsClient.BaseURL, _ = url.Parse(ts.URL)
+
+	// Act
+	// execute client method and save result
+	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	// Assert
+	
+	if response.Status != expectedStatus {
+		t.Errorf("handler returned unexpected status: got %v want %v",
+		response.Status, expectedStatus)
+	}
+
+
+	if response.TotalResults != expectedTotalResults {
+		t.Errorf("handler returned unexpected total results: got %v want %v",
+		response.TotalResults, expectedTotalResults)
+	}
+
+	if response.Articles[0].SourceName.Id != expectedFirstArticleSourceId {
+		t.Errorf("handler returned unexpected firt source id: got %v want %v",
+		response.Articles[0].SourceName.Id, expectedFirstArticleSourceId)
+	}
+
+	if response.Articles[0].SourceName.Name != expectedFirstArticleSourceName {
+		t.Errorf("handler returned unexpected firt source name: got %v want %v",
+		response.Articles[0].SourceName.Name, expectedFirstArticleSourceName)
+	}
+
+	if response.Articles[0].Author != expectedFirstArticleAuthor {
+		t.Errorf("handler returned unexpected firt article author: got %v want %v",
+		response.Articles[0].Author, expectedFirstArticleAuthor)
+	}
+
+	if response.Articles[0].Title != expectedFirstArticleTitle {
+		t.Errorf("handler returned unexpected firt article title: got %v want %v",
+		response.Articles[0].Title, expectedFirstArticleTitle)
+	}
+
+	if response.Articles[0].Description != expectedFirstArticleDescription {
+		t.Errorf("handler returned unexpected firt article description: got %v want %v",
+		response.Articles[0].Description, expectedFirstArticleDescription)
+	}
+
+	if response.Articles[0].Url != expectedFirstArticleUrl {
+		t.Errorf("handler returned unexpected firt article url: got %v want %v",
+		response.Articles[0].Url, expectedFirstArticleUrl)
+	}
+
+	if response.Articles[0].UrlToImage != expectedFirstArticleUrlToImage {
+		t.Errorf("handler returned unexpected firt article urlToImage: got %v want %v",
+		response.Articles[0].UrlToImage, expectedFirstArticleUrlToImage)
+	}
+
+	if response.Articles[0].PublishedAt.String() != expectedPublishedAt {
+		t.Errorf("handler returned unexpected firt article publishedAt: got %v want %v",
+		response.Articles[0].PublishedAt, expectedPublishedAt)
+	}
+
+	if response.Articles[0].Content == "" {
+		t.Errorf("handler returned empty content")
+	}
+
+	if response.Error.Status != "ok"{
+		t.Errorf("there is a error status, but it shouldn't be there")
+	}
+
+	articleLength := len(response.Articles)
+
+	if response.TotalResults != articleLength {
+		t.Errorf("handler returned unexpected number of articles: got %v want %v",
+		response.TotalResults, articleLength)
+	}	
+}
