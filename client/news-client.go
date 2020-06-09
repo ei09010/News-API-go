@@ -1,7 +1,7 @@
 package main
 
 import (
-	"News-API-go/constants"
+	//"News-API-go/constants"
 	"News-API-go/models"
 	"encoding/json"
 	"errors"
@@ -18,6 +18,10 @@ type Client struct {
 	UserAgent  string
 	ApiKey     string
 	httpClient *http.Client
+}
+
+func main() {
+
 }
 
 // GetTopHeadlines to request top headlines
@@ -107,20 +111,20 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 
 		//err = json.NewDecoder(myResponse).Decode(&articleResults)
 
-		if articleResults.Status != http.StatusOK {
+		if articleResults.Status != string(http.StatusOK) {
 			err = errors.New("The API returned an error code that wasn't expected: " + string(articleResults.Status))
 
-			articleResults.Error = models.Error{
-				Error:   constants.UnexpectedError,
-				Message: "The API returned an error code that wasn't expected: " + string(articleResults.Status)}
+			// articleResults.Error = models.Error{
+			// 	Error:   constants.UnexpectedError,
+			// 	Message: "The API returned an error code that wasn't expected: " + string(articleResults.Status)}
 		}
 
 	} else {
-		articleResults.Status = http.StatusInternalServerError
+		articleResults.Status = string(http.StatusInternalServerError)
 
-		articleResults.Error = models.Error{
-			Error:   constants.UnexpectedError,
-			Message: "The API returned an empty response. Are you connected to the internet?"}
+		// articleResults.Error = models.Error{
+		// 	Error:   constants.UnexpectedError,
+		// 	Message: "The API returned an empty response. Are you connected to the internet?"}
 	}
 
 	return &articleResults, err
