@@ -267,19 +267,19 @@ const (
 	ZH
 )
 
-type SortBy int
+type SortBy string
 
 const (
 	/// <summary>
 	/// Sort by publisher popularity
 	/// </summary>
-	Popularity SortBy = iota
+	Popularity SortBy = "popularity"
 	/// <summary>
 	/// Sort by article publish date (newest first)
 	/// </summary>
-	PublishedAt
+	PublishedAt  = "publishedAt"
 	/// <summary>
 	/// Sort by relevancy to the Q param
 	/// </summary>
-	Relevancy
+	Relevancy = "relevancy"
 )

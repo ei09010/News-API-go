@@ -61,8 +61,8 @@ type EverythingRequest struct {
 	Keyword  string
 	Sources  []string
 	Domains  []string
-	From 	 time.Time
-	To 		 time.Time
+	From 	 *time.Time
+	To 		 *time.Time
 	Language constants.Language
 	SortBy	 constants.SortBy
 	Page     int

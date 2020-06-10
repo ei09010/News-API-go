@@ -91,22 +91,22 @@ func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesRe
 		queryParams = append(queryParams, "domains="+strings.Join(req.Domains[:], ","))
 	}
 
-	if req.From != time.Time{} {
+	if req.From != nil {
 		// check this output in test
-		queryParams = append(queryParams, "from="+strings(req.From))
+		queryParams = append(queryParams, "from="+req.From.Format("2006-01-02"))
 	}
 
-	if req.To != time.Time{} {
+	if req.To != nil {
 		// check this output in test
-		queryParams = append(queryParams, "to="+strings(req.To))
+		queryParams = append(queryParams, "to="+req.To.Format("2006-01-02"))
 	}
 
 	if string(req.Language) != "" {
 		queryParams = append(queryParams, "language="+strings.ToLower(string(req.Language)))
 	}
 
-	if req.SortBy != 0 {
-		queryParams = append(queryParams, "sortBy="+strconv.Itoa(req.SortBy))
+	if req.SortBy != "" {
+		queryParams = append(queryParams, "sortBy="+strings.ToLower(string(req.SortBy)))
 	}
 
 	//page information
