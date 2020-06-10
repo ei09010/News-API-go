@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"News-API-go/models"
@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 	"strconv"
+	"log"
 )
 
 // Client to aggregate basic information regarding http calls
@@ -15,17 +16,24 @@ type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string
 	ApiKey     string
-	httpClient *http.Client
+	HttpClient *http.Client
 }
 
-func main() {
+func NewClient(myUrl string, apiKey string) *Client{
 
+	parsedUrl, _ := url.Parse(myUrl)
+
+	return &Client{
+		BaseURL: parsedUrl,
+		HttpClient: &http.Client{},
+		ApiKey: apiKey,
+	}
 }
 
 // GetTopHeadlines to request top headlines
 func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.ArticlesResult, error) {
 
-	relativePath := &url.URL{Path: "/top-headlines"}
+	relativePath := &url.URL{Path: "/v2/top-headlines"}
 
 	queryParams := []string{}
 
@@ -67,7 +75,13 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 
 	relativePath.Path += queryString
 
-	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
+	parsedPath, err := url.Parse(relativePath.Path)
+	
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	urlAbsoluteReference := c.BaseURL.ResolveReference(parsedPath)
 
 	return c.makeRequest(urlAbsoluteReference, queryString)
 
@@ -75,7 +89,7 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 
 func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesResult, error) {
 
-	relativePath := &url.URL{Path: "/everything"}
+	relativePath := &url.URL{Path: "/v2/everything"}
 
 	queryParams := []string{}
 
@@ -92,12 +106,10 @@ func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesRe
 	}
 
 	if req.From != nil {
-		// check this output in test
 		queryParams = append(queryParams, "from="+req.From.Format("2006-01-02"))
 	}
 
 	if req.To != nil {
-		// check this output in test
 		queryParams = append(queryParams, "to="+req.To.Format("2006-01-02"))
 	}
 
@@ -127,7 +139,13 @@ func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesRe
 
 	relativePath.Path += queryString
 
-	urlAbsoluteReference := c.BaseURL.ResolveReference(relativePath)
+	parsedPath, err := url.Parse(relativePath.Path)
+	
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	urlAbsoluteReference := c.BaseURL.ResolveReference(parsedPath)
 
 	return c.makeRequest(urlAbsoluteReference, queryString)
 
@@ -143,12 +161,9 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 	}
 
 	customReq.Header.Set("accept", "application/json")
-	customReq.Header.Set("user-agent", c.UserAgent)
 	customReq.Header.Set("x-api-key", c.ApiKey)
 
-	c.httpClient = &http.Client{}
-
-	httpResponse, err := c.httpClient.Do(customReq)
+	httpResponse, err := c.HttpClient.Do(customReq)
 
 	if err != nil {
 		return nil, err
@@ -178,6 +193,7 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 		}
 
 	} else {
+
 			return &articleResults, err
 	}
 

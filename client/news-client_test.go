@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"News-API-go/constants"
@@ -6,18 +6,13 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
 	"testing"
 	"time"
 )
 
-var newsClient Client
-var urlObj *url.URL
-
 func TestMain(m *testing.M) {
 
-	newsClient.ApiKey = "testKey"
 	os.Exit(m.Run())
 }
 
@@ -25,11 +20,13 @@ func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 
 	//Arrange
 	expectedCorrectResponse := `{"status": "ok","totalResults": 1,"articles": [{"source": {"id": "the-wall-street-journal","name": "The Wall Street Journal"},"author": "Alison Sider","title": "Airlines Got $25 Billion in Stimulus; Industry Still Expected to Shrink - The Wall Street Journal","description": "U.S. carriers are planning to operate smaller companies with fewer flights and employees","url": "https://www.wsj.com/articles/airlines-got-25-billion-in-stimulus-industry-still-expected-to-shrink-11591527600","urlToImage": "https://images.wsj.net/im-194495/social","publishedAt": "2020-06-07T14:11:39Z","content": "Federal stimulus money for airlines is keeping them afloat through the coronavirus pandemic, but its not proving to be enough to sustain the industry at its pre-pandemic size.Carriers say they will… [+320 chars]"}]}`
-	expectedCorrectRequest := `/top-headlines?category=business&language=en&country=ae`
+	expectedCorrectRequest := `/v2/top-headlines?category=business&language=en&country=us`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedCorrectRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedCorrectRequest {
 			io.WriteString(w, expectedCorrectResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -56,10 +53,9 @@ func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 		Language: "EN",
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
-	// execute client method and save result
 	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
 
 	if err != nil {
@@ -67,7 +63,6 @@ func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 	}
 
 	// Assert
-	
 	if response.Status != expectedStatus {
 		t.Errorf("handler returned unexpected status: got %v want %v",
 		response.Status, expectedStatus)
@@ -140,11 +135,13 @@ func TestGetTopHeadlines_StandardRequestWithPageInfo_ReturnsSuccessResponse(t *t
 
 	//Arrange
 	expectedCorrectResponse := `{"status": "ok","totalResults": 1,"articles": [{"source": {"id": "the-wall-street-journal","name": "The Wall Street Journal"},"author": "Alison Sider","title": "Airlines Got $25 Billion in Stimulus; Industry Still Expected to Shrink - The Wall Street Journal","description": "U.S. carriers are planning to operate smaller companies with fewer flights and employees","url": "https://www.wsj.com/articles/airlines-got-25-billion-in-stimulus-industry-still-expected-to-shrink-11591527600","urlToImage": "https://images.wsj.net/im-194495/social","publishedAt": "2020-06-07T14:11:39Z","content": "Federal stimulus money for airlines is keeping them afloat through the coronavirus pandemic, but its not proving to be enough to sustain the industry at its pre-pandemic size.Carriers say they will… [+320 chars]"}]}`
-	expectedCorrectRequest := `/top-headlines?category=business&language=en&country=ae&page=1&pageSize=1`
+	expectedCorrectRequest := `/v2/top-headlines?category=business&language=en&country=us&page=1&pageSize=1`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedCorrectRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedCorrectRequest {
 			io.WriteString(w, expectedCorrectResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -173,10 +170,9 @@ func TestGetTopHeadlines_StandardRequestWithPageInfo_ReturnsSuccessResponse(t *t
 		PageSize: 1,
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
-	// execute client method and save result
 	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
 
 	if err != nil {
@@ -184,7 +180,6 @@ func TestGetTopHeadlines_StandardRequestWithPageInfo_ReturnsSuccessResponse(t *t
 	}
 
 	// Assert
-	
 	if response.Status != expectedStatus {
 		t.Errorf("handler returned unexpected status: got %v want %v",
 		response.Status, expectedStatus)
@@ -256,11 +251,13 @@ func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsParametersIncompat
 		"code": "parametersIncompatible",
 		"message": "You cannot mix the sources parameter with the country or category parameters."
 	}`
-	expectedRequest := `/top-headlines?sources=techcrunch,cnn&language=en&country=ae&page=1&pageSize=1`
+	expectedRequest := `/v2/top-headlines?sources=techcrunch,cnn&language=en&country=us&page=1&pageSize=1`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedRequest {
 			io.WriteString(w, expectedResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -281,10 +278,9 @@ func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsParametersIncompat
 		Sources:  []string{"techcrunch", "cnn"},
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
-	// execute client method and save result
 	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
 
 	if err != nil {
@@ -318,11 +314,13 @@ func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsApiKeyMissing(t *t
 		"code": "apiKeyMissing",
 		"message": "Your API key is missing. Append this to the URL with the apiKey param, or use the x-api-key HTTP header."
 	}`
-	expectedRequest := `/top-headlines?sources=techcrunch,cnn&language=en&country=ae&page=1&pageSize=1`
+	expectedRequest := `/v2/top-headlines?sources=techcrunch,cnn&language=en&country=us&page=1&pageSize=1`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedRequest {
 			io.WriteString(w, expectedResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -343,10 +341,9 @@ func TestGetTopHeadlines_StandardRequestWithWithSource_ReturnsApiKeyMissing(t *t
 		Sources:  []string{"techcrunch", "cnn"},
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
-	// execute client method and save result
 	response, err := newsClient.GetTopHeadlines(topHeadlinesReq)
 
 	if err != nil {
@@ -377,11 +374,13 @@ func TestGetEverything_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 
 	//Arrange
 	expectedCorrectResponse := `{"status": "ok","totalResults": 7904,"articles": [{"source": {"id": "techcrunch","name": "TechCrunch"},"author": "Jake Bright","title": "アフリカのテックニュースまとめ読み：UAVによる救命医療用品の配送など","description": "2020年5月におきた各種イベントは、アフリカがグローバルに応用できるテクノロジーを育むことができるという主張を支持するものとなった。\r\n\r\nアフリカ大陸でビジネスモデルを開発した2つのスタートアップ、MallforAfricaとZiplineが国際的な注目を浴びている。\r\n\r\nDHLは、ナイジェリアのデジタルリテール・スタートアップ、MallforAfrica.comから成長したターンキーのeコマース企業である<a target=\"_blank\" href=\"https://linkcommerce.com/\"…","url": "https://jp.techcrunch.com/2020/06/10/2020-06-01-africa-roundup-dhl-invests-in-mallforafrica-zipline-launches-in-us-novastar-raises-200m/","urlToImage": "https://techcrunchjp.files.wordpress.com/2020/06/202205hh1017-1.jpg?w=1024","publishedAt": "2020-06-09T23:00:29Z","content": "20205\r\n2MallforAfricaZipline\r\nDHLMallforAfrica.comeLink Commerce\r\nLink Commerce\r\nChris Folayan2011MallforAfrica\r\nMallforAfrica\r\ne25030\r\nLink CommerceMallforAfrica.comDHL\r\nZiplineNovant Health\r\nZiplin… [+551 chars]"}]}`
-	expectedCorrectRequest := `/everything?sources=techcrunch,cnn&sortBy=popularity&page=1&pageSize=1`
+	expectedCorrectRequest := `/v2/everything?sources=techcrunch,cnn&sortBy=popularity&page=1&pageSize=1`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedCorrectRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedCorrectRequest {
 			io.WriteString(w, expectedCorrectResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -405,10 +404,9 @@ func TestGetEverything_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 		SortBy: "popularity",
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
-	// execute client method and save result
 	response, err := newsClient.GetEverything(everythingReq)
 
 	if err != nil {
@@ -416,7 +414,6 @@ func TestGetEverything_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 	}
 
 	// Assert
-	
 	if response.Status != expectedStatus {
 		t.Errorf("handler returned unexpected status: got %v want %v",
 		response.Status, expectedStatus)
@@ -462,11 +459,13 @@ func TestGetEverything_StandardRequestWithTimeStamps_ReturnsSuccessResponse(t *t
 
 	//Arrange
 	expectedCorrectResponse := `{"status": "ok","totalResults": 7904,"articles": [{"source": {"id": "techcrunch","name": "TechCrunch"},"author": "Jake Bright","title": "アフリカのテックニュースまとめ読み：UAVによる救命医療用品の配送など","description": "2020年5月におきた各種イベントは、アフリカがグローバルに応用できるテクノロジーを育むことができるという主張を支持するものとなった。\r\n\r\nアフリカ大陸でビジネスモデルを開発した2つのスタートアップ、MallforAfricaとZiplineが国際的な注目を浴びている。\r\n\r\nDHLは、ナイジェリアのデジタルリテール・スタートアップ、MallforAfrica.comから成長したターンキーのeコマース企業である<a target=\"_blank\" href=\"https://linkcommerce.com/\"…","url": "https://jp.techcrunch.com/2020/06/10/2020-06-01-africa-roundup-dhl-invests-in-mallforafrica-zipline-launches-in-us-novastar-raises-200m/","urlToImage": "https://techcrunchjp.files.wordpress.com/2020/06/202205hh1017-1.jpg?w=1024","publishedAt": "2020-06-09T23:00:29Z","content": "20205\r\n2MallforAfricaZipline\r\nDHLMallforAfrica.comeLink Commerce\r\nLink Commerce\r\nChris Folayan2011MallforAfrica\r\nMallforAfrica\r\ne25030\r\nLink CommerceMallforAfrica.comDHL\r\nZiplineNovant Health\r\nZiplin… [+551 chars]"}]}`
-	expectedCorrectRequest := `/everything?sources=techcrunch,cnn&from=2020-06-08&to=2020-06-08&sortBy=popularity&page=1&pageSize=1`
+	expectedCorrectRequest := `/v2/everything?sources=techcrunch,cnn&from=2020-06-08&to=2020-06-08&sortBy=popularity&page=1&pageSize=1`
 	
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		
-		if req.URL.Path == expectedCorrectRequest {
+		request := req.URL.Path+"?"+req.URL.RawQuery
+
+		if request == expectedCorrectRequest {
 			io.WriteString(w, expectedCorrectResponse)
 		} else {
 			io.WriteString(w, "Bad request")
@@ -495,7 +494,7 @@ func TestGetEverything_StandardRequestWithTimeStamps_ReturnsSuccessResponse(t *t
 		To: &t2,
 	}
 
-	newsClient.BaseURL, _ = url.Parse(ts.URL)
+	newsClient := NewClient(ts.URL, "testKey")
 
 	// Act
 	// execute client method and save result
