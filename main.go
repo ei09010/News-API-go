@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-var newsClient = client.NewClient("https://newsapi.org", "7ba67bcc987240369c1915f6e27b4b3f")
+var newsClient = client.NewClient("https://newsapi.org", "XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
 func main(){
 
