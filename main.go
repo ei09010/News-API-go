@@ -24,5 +24,28 @@ func main(){
 	}
 
 	fmt.Println("we had the following result amount: ", response.TotalResults)
+
+	for _, article := range response.Articles{
+	
+		fmt.Println(article.SourceName)
+
+		fmt.Println(article.Author)
+
+		fmt.Println(article.Title)
+
+		fmt.Println(article.Description)
+
+		fmt.Println(article.Url)
+
+		fmt.Println(article.UrlToImage)
+
+		fmt.Println(article.PublishedAt)
+
+		fmt.Println(`
+		
+		*******************
+		
+		`)
+	}
 		
 }

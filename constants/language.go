@@ -3,61 +3,85 @@ package constants
 type Language string
 
 const (
+	/// <summary>
+	/// Afrikaans (South Africa)
+	/// </summary>
 	AF Language = "af"
 	AN = "an"
-	AR = "ar"
+	AR_lang = "ar"
 	AZ = "az"
-	BG = "bg"
+	BG_lang = "bg"
 	BN = "bn"
-	BR = "br"
+	BR_lang = "br"
 	BS = "bs"
-	CA = "ca"
+	CA_lang = "ca"
 	CS = "cs"
 	CY = "cy"
 	DA = "da"
-	DE = "de"
+	/// <summary>
+	/// German
+	/// </summary>
+	DE_lang = "de"
 	EL = "el"
+	/// <summary>
+	/// English
+	/// </summary>
 	EN = "en"
 	EO = "eo"
+	/// <summary>
+	/// Spanish
+	/// </summary>
 	ES = "es"
 	ET = "et"
 	EU = "eu"
 	FA = "fa"
 	FI = "fi"
-	FR = "fr"
+	FR_lang = "fr"
 	GL = "gl"
 	HE = "he"
 	HI = "hi"
 	HR = "hr"
 	HT = "ht"
-	HU = "hu"
+	HU_lang = "hu"
 	HY = "hy"
-	ID = "id"
+	ID_lang = "id"
 	IS = "is"
-	IT = "it"
-	JP = "jp"
+	/// <summary>
+	/// Italian
+	/// </summary>
+	IT_lang = "it"
+	/// <summary>
+	/// Japanese
+	/// </summary>
+	JP_lang = "jp"
 	JV = "jv"
 	KK = "kk"
 	KO = "ko"
 	LA = "la"
 	LB = "lb"
-	LT = "lt"
-	LV = "lv"
+	LT_lang = "lt"
+	LV_lang = "lv"
 	MG = "mg"
 	MK = "mk"
 	ML = "ml"
 	MR = "mr"
 	MS = "ms"
-	NL = "nl"
-	NN = "mn"
-	NO = "no"
+	/// <summary>
+	/// Dutch
+	/// </summary>
+	NL_lang = "nl"
+	NN = "nn"
+	NO_lang = "no"
 	OC = "oc"
-	PL = "pl"
-	PT = "pt"
-	RO = "ro"
-	RU = "ru"
+	PL_lang = "pl"
+	/// <summary>
+	/// Portuguese
+	/// </summary>
+	PT_lang = "pt"
+	RO_lang = "ro"
+	RU_lang = "ru"
 	SH = "sh"
-	SK = "sk"
+	SK_lang = "sk"
 	SL = "sl"
 	SQ = "sq"
 	SR = "sr"
@@ -65,12 +89,13 @@ const (
 	SW = "sw"
 	TA = "ta"
 	TE = "te"
-	TH = "th"
+	TH_lang = "th"
 	TL = "tl"
-	TR = "tr"
+	TR_lang = "tr"
 	UK = "uk"
 	UR = "ur"
 	VI = "vi"
 	VO = "vo"
 	ZH = "zh"
 )
+

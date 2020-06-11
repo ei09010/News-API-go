@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-func TestMain(m *testing.M) {
-
-	os.Exit(m.Run())
-}
-
 func TestGetTopHeadlines_StandardRequest_ReturnsSuccessResponse(t *testing.T) {
 
 	//Arrange
