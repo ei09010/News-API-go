@@ -4,11 +4,11 @@ import (
 	"News-API-go/models"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"strings"
 	"strconv"
-	"log"
+	"strings"
 )
 
 // Client to aggregate basic information regarding http calls
@@ -19,14 +19,14 @@ type Client struct {
 	HttpClient *http.Client
 }
 
-func NewClient(myUrl string, apiKey string) *Client{
+func NewClient(myUrl string, apiKey string) *Client {
 
 	parsedUrl, _ := url.Parse(myUrl)
 
 	return &Client{
-		BaseURL: parsedUrl,
+		BaseURL:    parsedUrl,
 		HttpClient: &http.Client{},
-		ApiKey: apiKey,
+		ApiKey:     apiKey,
 	}
 }
 
@@ -69,15 +69,15 @@ func (c *Client) GetTopHeadlines(req models.TopHeadlinesRequest) (*models.Articl
 
 	queryString := strings.Join(queryParams[:], "&")
 
-	if len(queryParams) > 0{
+	if len(queryParams) > 0 {
 		relativePath.Path += "?"
 	}
 
 	relativePath.Path += queryString
 
 	parsedPath, err := url.Parse(relativePath.Path)
-	
-	if err != nil{
+
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -133,15 +133,15 @@ func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesRe
 
 	queryString := strings.Join(queryParams[:], "&")
 
-	if len(queryParams) > 0{
+	if len(queryParams) > 0 {
 		relativePath.Path += "?"
 	}
 
 	relativePath.Path += queryString
 
 	parsedPath, err := url.Parse(relativePath.Path)
-	
-	if err != nil{
+
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -150,7 +150,6 @@ func (c *Client) GetEverything(req models.EverythingRequest) (*models.ArticlesRe
 	return c.makeRequest(urlAbsoluteReference, queryString)
 
 }
-
 
 func (c *Client) makeRequest(url *url.URL, queryString string) (*models.ArticlesResult, error) {
 
@@ -194,7 +193,7 @@ func (c *Client) makeRequest(url *url.URL, queryString string) (*models.Articles
 
 	} else {
 
-			return &articleResults, err
+		return &articleResults, err
 	}
 
 	return &articleResults, err
